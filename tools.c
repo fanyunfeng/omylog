@@ -12,7 +12,7 @@ time_t timestamp(const char* message, const char* fmt){
 }
 
 
-double getValue(const char* message, const char* name, int len){
+int getValue(const char* message, const char* name, int len, double* value){
   char ch;
   const char* p = strstr(message, name);
 
@@ -50,7 +50,12 @@ double getValue(const char* message, const char* name, int len){
   return 0;
 
 findStart:
-  return atof(p);
+  *value = atof(p);
+  return 1;
+}
+
+int match(const char* message, char* fmt){
+  return 1;
 }
 
 int main(int argc, char** argv){
@@ -61,16 +66,19 @@ int main(int argc, char** argv){
   time_t time = timestamp(message, "%FT%T");
   printf("%ld\n", time);
 
+  double v;
   {
     char name[] = "provider";
-    double v = getValue(message, name, strlen(name));
-    printf("%s:%f\n", name, v);
+    if(getValue(message, name, strlen(name), &v)){
+      printf("%s:%f\n", name, v);
+    }
   }
 
   {
     char name[] = "seconds";
-    double v = getValue(message, name, strlen(name));
-    printf("%s:%f\n", name, v);
+    if(getValue(message, name, strlen(name), &v)){
+      printf("%s:%f\n", name, v);
+    }
   }
 
   return 0;
